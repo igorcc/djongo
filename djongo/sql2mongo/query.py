@@ -415,6 +415,18 @@ class InsertQuery(VoidQuery):
             return_document=ReturnDocument.AFTER
         )
 
+        if not auto:
+            doc = self.db_ref['__schema__'].insert_one(
+                {
+                    'name': self.left_table,
+                    'auto': {
+                        'seq': 1,
+                        'field_names': ['id']
+                    }
+                }
+            )
+            auto = self.db_ref['__schema__'].find_one(doc.inserted_id)
+        
         for i, val in enumerate(self._vals):
             ins = {}
             if auto:
